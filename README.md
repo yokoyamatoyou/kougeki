@@ -10,3 +10,12 @@ and chat endpoints asynchronously, and writes the results back.
 - OpenAI API key in `.env`
 
 Run `python main.py` to start the GUI.
+
+## Running Tests
+
+Install test dependencies and execute the suite:
+
+```bash
+python -m pip install -r requirements.txt
+pytest -q
+```

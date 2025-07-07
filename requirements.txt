@@ -1,0 +1,4 @@
+openai
+pydantic-settings
+pytest
+pytest-asyncio
