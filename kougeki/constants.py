@@ -17,10 +17,14 @@ STATUS_COLORS = {
     "success": "green",
 }
 
-# Weights used for combining Moderation API scores with the LLM score
-# when calculating a single aggressiveness metric.
+from .config import settings
+
+# Default weights used for combining Moderation API scores with the LLM
+# score when calculating a single aggressiveness metric. Values come from
+# :class:`kougeki.config.Settings` so they can be configured via the
+# environment.
 AGGREGATE_WEIGHTS = {
-    "llm": 0.7,
-    "hate": 0.2,
-    "violence": 0.1,
+    "llm": settings.llm_weight,
+    "hate": settings.hate_weight,
+    "violence": settings.violence_weight,
 }
