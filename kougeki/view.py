@@ -1,5 +1,6 @@
 import customtkinter as ctk
 
+from .constants import STATUS_COLORS
 from .controller import ModerationController
 
 ctk.set_appearance_mode("dark")
@@ -7,6 +8,8 @@ ctk.set_default_color_theme("blue")
 
 
 class ModerationView(ctk.CTk):
+    """Tkinter GUI for moderating text in Excel files."""
+
     def __init__(self):
         super().__init__()
         self.controller = ModerationController(self)
@@ -68,7 +71,7 @@ class ModerationView(ctk.CTk):
         self.progress_bar.pack(pady=20)
         self.progress_bar.set(0)
 
-    def update_status(self, text: str, color: str = "white"):
+    def update_status(self, text: str, color: str = STATUS_COLORS["default"]):
         self.status_label.configure(text=text, text_color=color)
 
     def update_progress(self, value: float):

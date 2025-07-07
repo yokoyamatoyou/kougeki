@@ -1,1 +1,12 @@
-# kougeki
+# Kougeki
+
+Simple GUI tool for analyzing text aggressiveness using OpenAI API.
+The application loads an Excel file, sends each row to the moderation
+and chat endpoints asynchronously, and writes the results back.
+
+## Requirements
+
+- Python 3.11+
+- OpenAI API key in `.env`
+
+Run `python main.py` to start the GUI.
