@@ -155,7 +155,7 @@ class ModerationApp(ctk.CTk):
         for attempt in range(max_retries):
             try:
                 response = client.chat.completions.create(
-                    model="gpt-4o-mini-2024-07-18",
+                    model="gpt-4.1-mini-2025-04-14",
                     messages=[
                         {"role": "system", "content": "You are a helpful assistant that analyzes text for aggressiveness."},
                         {"role": "user", "content": prompt}
