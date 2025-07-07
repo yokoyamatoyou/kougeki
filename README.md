@@ -10,6 +10,7 @@ Moderation scores are combined with the LLM prediction to create an
 
 - Python 3.11+
 - OpenAI API key in `.env`
+- The application exits if the key is missing
 - Optional `LOG_LEVEL` and `LOG_FILE` for logging
 - `pandas` for reading and writing Excel files
 
