@@ -1,3 +1,5 @@
+"""Async service layer for calling the OpenAI API."""
+
 import asyncio
 import logging
 from functools import wraps
