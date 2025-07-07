@@ -120,3 +120,18 @@ async def test_retry_decorator_failure(monkeypatch):
     with pytest.raises(RuntimeError):
         await always_fail()
     assert len(calls) == 2
+
+
+def test_aggregate_aggressiveness():
+    scores = services.ModerationScores(
+        hate=0.2,
+        hate_threatening=0,
+        self_harm=0,
+        sexual=0,
+        sexual_minors=0,
+        violence=0.3,
+        violence_graphic=0,
+    )
+    result = services.aggregate_aggressiveness(scores, 6, {"llm": 0.6, "hate": 0.3, "violence": 0.1})
+    assert isinstance(result, int)
+    assert 0 <= result <= 9

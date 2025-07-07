@@ -14,6 +14,7 @@ from .models import (
     ModerationResult,
     ModerationScores,
 )
+from .constants import AGGREGATE_WEIGHTS
 
 logger = logging.getLogger(__name__)
 
@@ -128,3 +129,38 @@ async def get_aggressiveness_score(text: str) -> AggressivenessResult:
         score = None
         reason = None
     return AggressivenessResult(score=score, reason=reason)
+
+
+def aggregate_aggressiveness(
+    mod_scores: ModerationScores,
+    llm_score: int | None,
+    weights: dict[str, float] = AGGREGATE_WEIGHTS,
+) -> int | None:
+    """Combine LLM and moderation scores into a single metric.
+
+    Parameters
+    ----------
+    mod_scores:
+        Scores returned by the moderation API.
+    llm_score:
+        Score predicted by the language model (0-9). If ``None`` the
+        function returns ``None``.
+    weights:
+        Mapping of ``"llm"``, ``"hate"`` and ``"violence"`` weight values.
+
+    Returns
+    -------
+    int | None
+        Rounded aggressiveness score in the range 0-9 or ``None`` if no
+        LLM score was provided.
+    """
+
+    if llm_score is None:
+        return None
+
+    overall = (
+        llm_score * weights.get("llm", 0)
+        + mod_scores.hate * 10 * weights.get("hate", 0)
+        + mod_scores.violence * 10 * weights.get("violence", 0)
+    )
+    return max(0, min(9, round(overall)))
