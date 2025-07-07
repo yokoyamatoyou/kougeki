@@ -17,6 +17,10 @@ class ModerationView(ctk.CTk):
         self.geometry("600x400")
         self.create_ui()
 
+    def call_in_main(self, func, *args, **kwargs) -> None:
+        """Execute ``func`` on the Tkinter main thread."""
+        self.after(0, lambda: func(*args, **kwargs))
+
     def create_ui(self):
         self.main_frame = ctk.CTkFrame(self)
         self.main_frame.pack(fill="both", expand=True, padx=20, pady=20)
@@ -48,7 +52,7 @@ class ModerationView(ctk.CTk):
         self.analyze_button = ctk.CTkButton(
             self.button_frame,
             text="分析開始",
-            command=self.controller.analyze_file_sync,
+            command=self.controller.analyze_file_async,
             width=200,
             height=40,
             state="disabled",
