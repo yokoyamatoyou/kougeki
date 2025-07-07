@@ -4,6 +4,8 @@ import asyncio
 import json
 import logging
 from functools import wraps
+from collections.abc import Awaitable, Callable
+from typing import ParamSpec, TypeVar
 
 from openai import AsyncOpenAI
 
@@ -20,10 +22,30 @@ logger = logging.getLogger(__name__)
 client = AsyncOpenAI(api_key=settings.openai_api_key)
 
 
-def retry(max_attempts: int = 5, base_delay: float = 1.0):
-    def decorator(func):
+P = ParamSpec("P")
+T = TypeVar("T")
+
+
+def retry(max_attempts: int = 5, base_delay: float = 1.0) -> Callable[[Callable[P, Awaitable[T]]], Callable[P, Awaitable[T]]]:
+    """Retry an async function with exponential backoff.
+
+    Parameters
+    ----------
+    max_attempts:
+        Maximum number of attempts before giving up.
+    base_delay:
+        Initial delay in seconds before retrying. The delay doubles after each
+        failed attempt.
+
+    Returns
+    -------
+    Callable[[Callable[P, Awaitable[T]]], Callable[P, Awaitable[T]]]
+        Decorator that wraps the target coroutine with retry logic.
+    """
+
+    def decorator(func: Callable[P, Awaitable[T]]) -> Callable[P, Awaitable[T]]:
         @wraps(func)
-        async def wrapper(*args, **kwargs):
+        async def wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
             delay = base_delay
             for attempt in range(max_attempts):
                 try:
