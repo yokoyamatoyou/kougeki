@@ -8,6 +8,7 @@ and chat endpoints asynchronously, and writes the results back.
 
 - Python 3.11+
 - OpenAI API key in `.env`
+- Optional `LOG_LEVEL` and `LOG_FILE` for logging
 
 Run `python main.py` to start the GUI.
 

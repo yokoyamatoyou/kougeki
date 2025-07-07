@@ -9,6 +9,8 @@ class Settings(BaseSettings):
     openai_api_key: str = ""
     chat_model: str = "gpt-4.1-mini-2025-04-14"
     moderation_model: str = "omni-moderation-latest"
+    log_level: str = "INFO"
+    log_file: str = "kougeki.log"
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
