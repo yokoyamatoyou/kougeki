@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """Application constants used throughout the project."""
 
+from .config import settings
+
 CATEGORY_NAMES = [
     "hate",
     "hate/threatening",
@@ -16,8 +18,6 @@ STATUS_COLORS = {
     "error": "red",
     "success": "green",
 }
-
-from .config import settings
 
 # Default weights used for combining Moderation API scores with the LLM
 # score when calculating a single aggressiveness metric. Values come from
