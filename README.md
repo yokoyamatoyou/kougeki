@@ -11,6 +11,7 @@ Moderation scores are combined with the LLM prediction to create an
 - Python 3.11+
 - OpenAI API key in `.env`
 - Optional `LOG_LEVEL` and `LOG_FILE` for logging
+- `pandas` for reading and writing Excel files
 
 Run `python main.py` to start the GUI.
 
