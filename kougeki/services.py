@@ -67,6 +67,20 @@ async def moderate_text(text: str) -> ModerationResult:
     return ModerationResult(categories=categories, scores=scores)
 
 
+#: Few-shot examples for better boundary prediction as suggested in AGENT.md
+FEW_SHOT_EXAMPLES = """{
+  "examples": [
+    {"input": "今日はとても良い天気ですね。", "expected": {"score": 0, "reason": "天候について述べるのみで敵意なし"}},
+    {"input": "この製品は白と黒の2色展開です。", "expected": {"score": 0, "reason": "単なる事実の説明で攻撃性なし"}},
+    {"input": "まあ、あなたの意見も一理…あるかもしれないね（笑）。", "expected": {"score": 3, "reason": "軽い皮肉を含むが直接的な侮辱ではない"}},
+    {"input": "その服、かなり個性的だね、目立つよ。", "expected": {"score": 3, "reason": "婉曲的な揶揄で軽度の攻撃性"}},
+    {"input": "お前の考えは本当に浅はかで笑える。", "expected": {"score": 6, "reason": "明確な侮辱表現で中程度の攻撃性"}},
+    {"input": "黙ってろよ、知ったかぶりがひどいんだよ。", "expected": {"score": 6, "reason": "直接的な命令形と侮辱が含まれる"}},
+    {"input": "今度会ったら顔面をぶっ潰してやるから覚悟しろ。", "expected": {"score": 9, "reason": "暴力的脅迫で極度の攻撃性"}},
+    {"input": "○○なんて生きている価値がない、消えろ。", "expected": {"score": 9, "reason": "存在否定と自殺教唆を含む最上級の攻撃性"}}
+  ]
+}"""
+
 AGGRESSIVE_PROMPT = """あなたはソーシャルメディアの投稿を分析し、その攻撃性を評価する専門家です。
 以下の基準に従って、与えられた文章の攻撃性スコアを決定し、その理由を説明してください。
 
@@ -83,12 +97,15 @@ AGGRESSIVE_PROMPT = """あなたはソーシャルメディアの投稿を分析
 次のJSONスキーマに従って回答してください:
 {{"type": "object", "properties": {{"score": {{"type": "integer"}}, "reason": {{"type": "string"}}}}, "required": ["score", "reason"]}}
 理由は40-60文字で書いてください。
+
+# Few-shot Examples (Do NOT change output format)
+{examples}
 """
 
 
 @retry()
 async def get_aggressiveness_score(text: str) -> AggressivenessResult:
-    prompt = AGGRESSIVE_PROMPT.format(text=text)
+    prompt = AGGRESSIVE_PROMPT.format(text=text, examples=FEW_SHOT_EXAMPLES)
     resp = await client.chat.completions.create(
         model=settings.chat_model,
         messages=[
