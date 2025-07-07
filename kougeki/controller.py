@@ -91,6 +91,7 @@ class ModerationController:
         category_scores = {name: [] for name in CATEGORY_NAMES}
         ag_scores: list[int | None] = []
         ag_reasons: list[str | None] = []
+        overall_scores: list[int | None] = []
         for idx, row in self.df.iterrows():
             text = row["投稿内容"]
             mod_res, ag_res = await asyncio.gather(
@@ -99,12 +100,15 @@ class ModerationController:
             )
 
             for name in CATEGORY_NAMES:
-                attr = name.replace("/", "_")
+                attr = name.replace("/", "_").replace("-", "_")
                 category_flags[name].append(getattr(mod_res.categories, attr))
                 category_scores[name].append(getattr(mod_res.scores, attr))
 
             ag_scores.append(ag_res.score)
             ag_reasons.append(ag_res.reason)
+            overall_scores.append(
+                services.aggregate_aggressiveness(mod_res.scores, ag_res.score)
+            )
 
             progress = (idx + 1) / total_rows
             self._update_progress(progress)
@@ -116,6 +120,7 @@ class ModerationController:
             self.df[f"{name}_score"] = category_scores[name]
         self.df["aggressiveness_score"] = ag_scores
         self.df["aggressiveness_reason"] = ag_reasons
+        self.df["aggressiveness_overall"] = overall_scores
         self._update_status(
             "分析が完了しました", STATUS_COLORS["success"]
         )
