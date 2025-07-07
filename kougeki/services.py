@@ -1,6 +1,7 @@
 """Async service layer for calling the OpenAI API."""
 
 import asyncio
+import json
 import logging
 from functools import wraps
 
@@ -79,9 +80,9 @@ AGGRESSIVE_PROMPT = """あなたはソーシャルメディアの投稿を分析
 
 分析対象の文章: {text}
 
-以下の形式で回答してください：
-スコア: [0-9の整数]
-理由: [40-60文字で、なぜそのスコアを付けたのかを具体的に説明]
+次のJSONスキーマに従って回答してください:
+{{"type": "object", "properties": {{"score": {{"type": "integer"}}, "reason": {{"type": "string"}}}}, "required": ["score", "reason"]}}
+理由は40-60文字で書いてください。
 """
 
 
@@ -99,16 +100,14 @@ async def get_aggressiveness_score(text: str) -> AggressivenessResult:
         ],
         temperature=0,
         top_p=0.9,
+        response_format={"type": "json_object"},
     )
-    content = resp.choices[0].message.content.strip()
-    lines = content.splitlines()
-    score = None
-    reason = None
-    for line in lines:
-        if line.startswith("スコア:"):
-            value = line.replace("スコア:", "").strip()
-            if value.isdigit():
-                score = int(value)
-        elif line.startswith("理由:"):
-            reason = line.replace("理由:", "").strip()
+    try:
+        data = json.loads(resp.choices[0].message.content)
+        score = data.get("score")
+        reason = data.get("reason")
+    except Exception:  # noqa: BLE001
+        logger.exception("failed to parse aggressiveness JSON")
+        score = None
+        reason = None
     return AggressivenessResult(score=score, reason=reason)
