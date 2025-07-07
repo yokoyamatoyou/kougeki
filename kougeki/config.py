@@ -11,6 +11,9 @@ class Settings(BaseSettings):
     moderation_model: str = "omni-moderation-latest"
     log_level: str = "INFO"
     log_file: str = "kougeki.log"
+    llm_weight: float = 0.7
+    hate_weight: float = 0.2
+    violence_weight: float = 0.1
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 

@@ -135,3 +135,20 @@ def test_aggregate_aggressiveness():
     result = services.aggregate_aggressiveness(scores, 6, {"llm": 0.6, "hate": 0.3, "violence": 0.1})
     assert isinstance(result, int)
     assert 0 <= result <= 9
+
+
+def test_aggregate_aggressiveness_from_settings(monkeypatch):
+    scores = services.ModerationScores(
+        hate=0.5,
+        hate_threatening=0,
+        self_harm=0,
+        sexual=0,
+        sexual_minors=0,
+        violence=0.5,
+        violence_graphic=0,
+    )
+    monkeypatch.setattr(services.settings, "llm_weight", 0.0)
+    monkeypatch.setattr(services.settings, "hate_weight", 0.0)
+    monkeypatch.setattr(services.settings, "violence_weight", 0.0)
+    result = services.aggregate_aggressiveness(scores, 7)
+    assert result == 0

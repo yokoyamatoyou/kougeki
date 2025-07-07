@@ -14,7 +14,6 @@ from .models import (
     ModerationResult,
     ModerationScores,
 )
-from .constants import AGGREGATE_WEIGHTS
 
 logger = logging.getLogger(__name__)
 
@@ -134,7 +133,7 @@ async def get_aggressiveness_score(text: str) -> AggressivenessResult:
 def aggregate_aggressiveness(
     mod_scores: ModerationScores,
     llm_score: int | None,
-    weights: dict[str, float] = AGGREGATE_WEIGHTS,
+    weights: dict[str, float] | None = None,
 ) -> int | None:
     """Combine LLM and moderation scores into a single metric.
 
@@ -147,6 +146,7 @@ def aggregate_aggressiveness(
         function returns ``None``.
     weights:
         Mapping of ``"llm"``, ``"hate"`` and ``"violence"`` weight values.
+        If ``None`` the values from :data:`kougeki.config.settings` are used.
 
     Returns
     -------
@@ -157,6 +157,13 @@ def aggregate_aggressiveness(
 
     if llm_score is None:
         return None
+
+    if weights is None:
+        weights = {
+            "llm": settings.llm_weight,
+            "hate": settings.hate_weight,
+            "violence": settings.violence_weight,
+        }
 
     overall = (
         llm_score * weights.get("llm", 0)
