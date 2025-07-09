@@ -16,6 +16,14 @@ Moderation scores are combined with the LLM prediction to create an
 
 Run `python main.py` to start the GUI.
 
+### Environment variables
+
+The application reads the following optional settings from `.env`:
+
+- `CHAT_TEMPERATURE` (default `0.1`)
+- `LOG_LEVEL`
+- `LOG_FILE`
+
 ## Running Tests
 
 Install test dependencies and execute the suite:

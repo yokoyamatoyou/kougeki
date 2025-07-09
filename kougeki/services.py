@@ -137,7 +137,7 @@ async def get_aggressiveness_score(text: str) -> AggressivenessResult:
             },
             {"role": "user", "content": prompt},
         ],
-        temperature=0,
+        temperature=settings.chat_temperature,
         top_p=0.9,
         response_format={"type": "json_object"},
     )
